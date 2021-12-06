@@ -31,7 +31,12 @@ def pass_day():
     lantern_fish[7] = eight_day
     lantern_fish[8] = zero_day
 
-for i in range(256):
+for i in range(80):
+    pass_day()
+
+print(sum(lantern_fish))
+
+for i in range(256 - 80):
     pass_day()
 
 print(sum(lantern_fish))
