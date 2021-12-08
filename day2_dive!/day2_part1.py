@@ -2,7 +2,8 @@ import read_functions
 
 position = [0, 0]
 
-instructions = read_functions.read_as_string_int_pairs("input.txt")
+instructions = read_functions.read_as_string_pairs("input.txt")
+
 
 def handleInstruction(instruction):
     direction = instruction[0]
@@ -13,6 +14,7 @@ def handleInstruction(instruction):
         position[1] -= moves
     elif direction == "down":
         position[1] += moves
+
 
 for instruction in instructions:
     handleInstruction(instruction)

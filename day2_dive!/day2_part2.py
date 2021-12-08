@@ -1,12 +1,12 @@
 import read_functions
 
 position = [0, 0, 0]
+instructions = read_functions.read_as_string_pairs("input.txt")
 
-instructions = read_functions.read_as_string_int_pairs("input.txt")
 
-def handle_instruction(instruction):
-    direction = instruction[0]
-    moves = int(instruction[1])
+def handle_instruction(_instruction):
+    direction = _instruction[0]
+    moves = int(_instruction[1])
     if direction == "forward":
         position[0] += moves
         position[1] += moves * position[2]
