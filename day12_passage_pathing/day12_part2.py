@@ -9,7 +9,7 @@ paths = [i.split("-") for i in read_functions.read_as_strings("input.txt")]
 def get_connections(cave):
     connections = []
     for path in paths:
-        if path[0] == cave
+        if path[0] == cave:
             connections.append(path[1])
         if path[1] == cave:
             connections.append(path[0])
