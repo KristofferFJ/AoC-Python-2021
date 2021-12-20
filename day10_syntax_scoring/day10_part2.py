@@ -1,52 +1,70 @@
 import read_functions
-import string_functions
-
-input_output_numbers = [[j[0].split(), j[1].split()] for j in
-                        [i.split("|") for i in read_functions.read_as_strings("input.txt")]]
 
 
-class Wiring:
-    def __init__(self, input_output):
-        self.input = input_output[0]
-        self.output = input_output[1]
-        remaining_letters = self.input
-        one = [i for i in self.input if len(i) == 2][0]
-        remaining_letters.remove(one)
-        seven = [i for i in self.input if len(i) == 3][0]
-        remaining_letters.remove(seven)
-        four = [i for i in self.input if len(i) == 4][0]
-        remaining_letters.remove(four)
-        eight = [i for i in self.input if len(i) == 7][0]
-        remaining_letters.remove(eight)
-        six = [i for i in self.input if len(i) == 6 and not string_functions.contains_letters(i, one)][0]
-        remaining_letters.remove(six)
-        nine = [i for i in self.input if len(i) == 6 and string_functions.contains_letters(i, four)][0]
-        remaining_letters.remove(nine)
-        zero = [i for i in remaining_letters if len(i) == 6][0]
-        remaining_letters.remove(zero)
-        five = [i for i in self.input if len(i) == 5 and string_functions.contains_letters(six, i)][0]
-        remaining_letters.remove(five)
-        three = [i for i in self.input if len(i) == 5 and string_functions.contains_letters(i, one)][0]
-        remaining_letters.remove(three)
-        two = remaining_letters[0]
+class SyntaxLine:
+    def __init__(self, line):
+        self.line = line
+        self.syntax_order = []
+        self.value_parentheses = 3
+        self.value_brackets = 57
+        self.value_curly_brackets = 1197
+        self.value_than_signs = 25137
 
-        self.numbers = [zero, one, two, three, four, five, six, seven, eight, nine]
+    def find_first_error(self):
+        print("line: " + self.line)
+        for sign in self.line:
+            if not self.register_sign(sign):
+                print("returns " + str(self.calculate_result(sign)))
+                return self.calculate_result(sign)
+        print("returns 0")
+        return 0
 
-    def determine_output_numbers(self):
-        wired_numbers = ""
-        for number in self.output:
-            wired_numbers += str(self.find_matching_number(number))
-        return int(wired_numbers)
+    def calculate_result(self, sign):
+        if sign == ")":
+            return self.value_parentheses
+        if sign == "]":
+            return self.value_brackets
+        if sign == "}":
+            return self.value_curly_brackets
+        if sign == ">":
+            return self.value_than_signs
 
-    def find_matching_number(self, number):
-        for potential_match in self.numbers:
-            if string_functions.has_same_letters(potential_match, number):
-                return self.numbers.index(potential_match)
+    def register_sign(self, sign):
+        if sign in ("(", "[", "{", "<"):
+            self.syntax_order.append(sign)
+            return 1
+        else:
+            if sign == ")":
+                if self.syntax_order[-1] == "(":
+                    self.syntax_order.pop(-1)
+                    return 1
+            if sign == "]":
+                if self.syntax_order[-1] == "[":
+                    self.syntax_order.pop(-1)
+                    return 1
+            if sign == "}":
+                if self.syntax_order[-1] == "{":
+                    self.syntax_order.pop(-1)
+                    return 1
+            if sign == ">":
+                if self.syntax_order[-1] == "<":
+                    self.syntax_order.pop(-1)
+                    return 1
+        return 0
 
 
-sum_of_output = 0
-for input_output in input_output_numbers:
-    wiring = Wiring(input_output)
-    sum_of_output += wiring.determine_output_numbers()
+class SyntaxPage:
+    def __init__(self, syntax_lines):
+        self.syntax_lines = syntax_lines
 
-print(sum_of_output)
+    def calculate_syntax_error(self):
+        sum_of_errors = 0
+        for line in self.syntax_lines:
+            sum_of_errors += line.find_first_error()
+        return sum_of_errors
+
+
+_syntax_lines = [SyntaxLine(line) for line in read_functions.read_as_strings("input.txt")]
+syntaxPage = SyntaxPage(_syntax_lines)
+
+print(syntaxPage.calculate_syntax_error())
