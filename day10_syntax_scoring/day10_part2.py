@@ -5,29 +5,40 @@ class SyntaxLine:
     def __init__(self, line):
         self.line = line
         self.syntax_order = []
-        self.value_parentheses = 3
-        self.value_brackets = 57
-        self.value_curly_brackets = 1197
-        self.value_than_signs = 25137
+        self.value_parentheses = 1
+        self.value_brackets = 2
+        self.value_curly_brackets = 3
+        self.value_than_signs = 4
+        self.sum_of_missing_signs = 0
 
     def find_first_error(self):
         print("line: " + self.line)
         for sign in self.line:
             if not self.register_sign(sign):
-                print("returns " + str(self.calculate_result(sign)))
-                return self.calculate_result(sign)
-        print("returns 0")
-        return 0
+                print("returns 0")
+                return 0
+        self.calculate_result()
+        print("returns " + str(self.sum_of_missing_signs))
+        return self.sum_of_missing_signs
 
-    def calculate_result(self, sign):
-        if sign == ")":
-            return self.value_parentheses
-        if sign == "]":
-            return self.value_brackets
-        if sign == "}":
-            return self.value_curly_brackets
-        if sign == ">":
-            return self.value_than_signs
+    def calculate_result(self):
+        while len(self.syntax_order) > 0:
+            if self.syntax_order[-1] == "(":
+                self.handle_sign(self.value_parentheses)
+                continue
+            if self.syntax_order[-1] == "[":
+                self.handle_sign(self.value_brackets)
+                continue
+            if self.syntax_order[-1] == "{":
+                self.handle_sign(self.value_curly_brackets)
+                continue
+            if self.syntax_order[-1] == "<":
+                self.handle_sign(self.value_than_signs)
+
+    def handle_sign(self, value):
+        self.sum_of_missing_signs *= 5
+        self.sum_of_missing_signs += value
+        self.syntax_order.pop(-1)
 
     def register_sign(self, sign):
         if sign in ("(", "[", "{", "<"):
@@ -58,10 +69,13 @@ class SyntaxPage:
         self.syntax_lines = syntax_lines
 
     def calculate_syntax_error(self):
-        sum_of_errors = 0
+        sum_of_errors = []
         for line in self.syntax_lines:
-            sum_of_errors += line.find_first_error()
-        return sum_of_errors
+            sum_of_errors.append(line.find_first_error())
+        sum_of_errors = [value for value in sum_of_errors if value != 0]
+        sum_of_errors.sort()
+
+        return sum_of_errors[int(len(sum_of_errors) / 2)]
 
 
 _syntax_lines = [SyntaxLine(line) for line in read_functions.read_as_strings("input.txt")]
